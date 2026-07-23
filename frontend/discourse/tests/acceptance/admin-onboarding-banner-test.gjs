@@ -316,7 +316,7 @@ acceptance("Admin - Onboarding Banner", function (needs) {
     step.isChecked();
   });
 
-  test("it can open the design wizard in the sidebar from the `select_theme` step", async function (assert) {
+  test("it can open the design wizard as a floating panel from the `select_theme` step", async function (assert) {
     const step = withStep("select_theme", assert);
 
     await visit("/");
@@ -326,11 +326,11 @@ acceptance("Admin - Onboarding Banner", function (needs) {
     await settled();
 
     assert
-      .dom(".sidebar-design-wizard")
-      .exists("design wizard takes over the sidebar");
+      .dom(".design-wizard-float")
+      .exists("design wizard floats over the page");
     assert
       .dom(".sidebar-sections")
-      .doesNotExist("regular sidebar sections are replaced");
+      .exists("regular sidebar sections stay in place");
     assert
       .dom(".design-wizard-modal__theme-card")
       .exists({ count: 2 }, "shows Foundation and Horizon");
@@ -347,11 +347,10 @@ acceptance("Admin - Onboarding Banner", function (needs) {
       .dom("link#design-wizard-preview-scheme", document.body)
       .exists("palette preview stylesheet is attached to the page");
 
-    await click(".sidebar-design-wizard__skip");
+    await click(".design-wizard-float__close");
     assert
-      .dom(".sidebar-design-wizard")
-      .doesNotExist("skipping restores the sidebar");
-    assert.dom(".sidebar-sections").exists("regular sidebar sections return");
+      .dom(".design-wizard-float")
+      .doesNotExist("closing removes the floating panel");
     assert
       .dom("link#design-wizard-preview-scheme", document.body)
       .doesNotExist("palette preview is removed");
