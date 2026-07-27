@@ -222,7 +222,6 @@ RSpec.describe ReviewableClaimedTopicsController do
       end
 
       it "queues a sidekiq job to refresh reviewable counts for users who can see the reviewable" do
-        SiteSetting.navigation_menu = "sidebar"
         SiteSetting.enable_category_group_moderation = true
 
         not_notified = Fabricate(:user)
@@ -396,7 +395,6 @@ RSpec.describe ReviewableClaimedTopicsController do
 
     it "queues a sidekiq job to refresh reviewable counts for users who can see the reviewable" do
       SiteSetting.reviewable_claiming = "optional"
-      SiteSetting.navigation_menu = "sidebar"
       SiteSetting.enable_category_group_moderation = true
 
       not_notified = Fabricate(:user)
