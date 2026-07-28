@@ -1742,7 +1742,7 @@ lt:
         default: "(numatyta)"
         any: "bet kuris"
       homepage:
-        default: "(numatyta)"
+        default: "Numatytasis"
       password_confirmation:
         title: "Pakartokite slaptažodį"
       invite_code:
@@ -2429,6 +2429,8 @@ lt:
       medium_dark_tone: Vidutinio tamsumo odos tonas
       dark_tone: Tamsus odos tonas
       default: Individualūs jaustukai
+    filter_controls:
+      reset: "Atstatyti"
     shared_drafts:
       title: "Bendrinami juodraščiai"
       notice: "Ši tema matoma tik tiems, kurie gali skelbti bendrinamus juodraščius."
@@ -4434,7 +4436,6 @@ lt:
               posts: "Pranešimai"
               share: "Dalintis"
             whos_posting:
-              all_categories: "Visos kategorijos"
               staff: "Personalas"
             trust_level_pipeline:
               trust_levels:
@@ -4787,6 +4788,8 @@ lt:
           enabled: "Galimas"
           disabled: "Uždrausta"
           reset: "Atstatyti"
+      duplicate_topic_titles:
+        allowed: "Leidžiama"
       backups:
         title: "Atsarginės kopijos"
         menu:
@@ -5759,6 +5762,7 @@ lt:
         delete: "Pašalinti"
         name: "Vardas"
         group: "Grupė"
+        all_groups: "Visos grupės"
         image: "Paveiksliukas"
         delete_confirm: "Ar tikrai nori ištrinti :%{name}: šypsenėlę?"
         settings: "Nustatymai"

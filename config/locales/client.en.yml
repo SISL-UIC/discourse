@@ -59,6 +59,7 @@ en:
         add_group: "Add user or group"
         mandatory_acl_tooltip: "This permission is mandatory for %{name} and cannot be removed"
         mandatory: "Mandatory"
+        disallowed: "Disallowed"
     carousel:
       go_to_slide: "Go to slide %{index}"
       previous: "Previous slide"
@@ -3299,7 +3300,7 @@ en:
       clear: "Clear filter"
 
     filter_controls:
-      reset: "Reset filter"
+      reset: "Reset"
       toggle: "Toggle dropdown filters"
 
     d_icon_grid_picker:
@@ -8231,6 +8232,11 @@ en:
       homepage:
         top_menu_default: "First item in top menu"
 
+      duplicate_topic_titles:
+        disallowed: "Disallowed"
+        allowed_across_categories: "Allowed across categories"
+        allowed: "Allowed"
+
       backups:
         title: "Backups"
         files_title: "Backup files"
@@ -8402,6 +8408,8 @@ en:
           default: "Default theme"
           settings_editor: "Settings Editor"
           show_advanced: "Show advanced"
+          maximize_editor: "Maximize editor"
+          minimize_editor: "Minimize editor"
           is_default: "Theme is enabled by default"
           user_selectable: "Theme can be selected by users"
           user_selectable_badge_label: "User selectable"
@@ -8478,10 +8486,13 @@ en:
           import_file_tip: ".tar.gz or .zip file containing theme"
           is_private: "Theme is in a private git repository"
           finish_install: "Finish Theme Installation"
+          placeholder_description: "This is a private theme that requires a deploy key to be installed in the repository's configuration. Once that is done, click the button below to finish installation."
           last_attempt: "Installation process did not finish, last attempted:"
           remote_branch: "Branch name (optional)"
           remote_branch_placeholder: "Choose a specific branch or keep empty"
-          public_key: "Grant the following public key access to the repo:"
+          public_key: "Grant the following public key read-only access to the repo:"
+          public_key_github: "Grant the following public key read-only access to the repo. See %{link} for instructions."
+          deploy_key_instructions: "GitHub deploy key instructions"
           install: "Install"
           installed: "Installed"
           screenshot: "%{name} screenshot"
@@ -8493,7 +8504,7 @@ en:
           installing_message_long_time: "Setting up your new theme is taking a little longer than expected, please hang tight…"
           duplicate_remote_theme: "The theme component “%{name}” is already installed, are you sure you want to install another copy?"
           force_install: "The theme cannot be installed because the Git repository is inaccessible. Are you sure you want to continue installing it?"
-          create_placeholder: "Create Placeholder"
+          create_placeholder: "Create placeholder"
           about_theme: "About"
           license: "License"
           version: "Version:"
@@ -8980,6 +8991,9 @@ en:
             configure_category_type: "configure category type"
             unconfigure_category_type: "unconfigure category type"
             change_access_control_list_permissions: "change access control list permissions"
+            admin_onboarding_step_completed: "complete admin onboarding step"
+            admin_onboarding_completed: "complete admin onboarding"
+            admin_onboarding_dismissed: "dismiss admin onboarding"
         screened_emails:
           title: "Screened emails"
           description: "When someone tries to create a new account, the following email addresses will be checked and the registration will be blocked, or some other action performed."
@@ -9928,6 +9942,9 @@ en:
         uploading: "Uploading…"
         name: "Name"
         group: "Group"
+        all_groups: "All groups"
+        filter_placeholder: "Search emojis by name"
+        no_results: "No emojis found."
         created_by: "Created By"
         image: "Image"
         alt: "custom emoji preview"

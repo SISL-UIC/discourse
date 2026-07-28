@@ -1912,7 +1912,7 @@ pt:
         default: "(predefinição)"
         any: "qualquer"
       homepage:
-        default: "(predefinição)"
+        default: "Predefinição"
       password_confirmation:
         title: "Palavra-passe Novamente"
       invite_code:
@@ -2720,6 +2720,8 @@ pt:
       medium_dark_tone: Tom de pele meio escuro
       dark_tone: Tom de pele escuro
       default: Emojis Personalizados
+    filter_controls:
+      reset: "Repor"
     shared_drafts:
       title: "Rascunhos Partilhados"
       notice: "Este tópico é visível apenas para quem pode publicar rascunhos partilhados."
@@ -4870,7 +4872,6 @@ pt:
               posts: "Mensagens"
               share: "Partilhar"
             whos_posting:
-              all_categories: "Todas as categorias"
               staff: "Pessoal"
             trust_level_pipeline:
               trust_levels:
@@ -5223,6 +5224,8 @@ pt:
           reset: "Repor"
       navigation_menu:
         sidebar: "Barra Lateral"
+      duplicate_topic_titles:
+        allowed: "Permitido"
       backups:
         title: "Fazer Cópias de Segurança"
         menu:
@@ -6058,6 +6061,7 @@ pt:
         uploading: "A enviar…"
         name: "Nome"
         group: "Grupo"
+        all_groups: "Todos os grupos"
         image: "Imagem"
         delete_confirm: "Tem a certeza que deseja eliminar o emoji :%{name}:?"
         settings: "Configurações"

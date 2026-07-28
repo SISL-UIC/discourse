@@ -1712,7 +1712,7 @@ da:
         default: "(standard)"
         any: "alle"
       homepage:
-        default: "(standard)"
+        default: "Standard"
       password_confirmation:
         title: "Gentag adgangskode"
       invite_code:
@@ -2375,6 +2375,8 @@ da:
       default: Brugerdefineret humørikoner
     filter_input:
       clear: "Ryd filter"
+    filter_controls:
+      reset: "Nulstil"
     shared_drafts:
       title: "Delte kladder"
       notice: "Dette emne er kun synligt for dem, der kan udgive delte kladder."
@@ -4691,7 +4693,6 @@ da:
               posts: "Indlæg"
               share: "Del"
             whos_posting:
-              all_categories: "Alle kategorier"
               staff: "Personale"
             trust_level_pipeline:
               trust_levels:
@@ -5192,6 +5193,8 @@ da:
           reset: "Nulstil"
       navigation_menu:
         sidebar: "Sidebjælke"
+      duplicate_topic_titles:
+        allowed: "Tilladt"
       backups:
         title: "Sikkerhedskopier"
         files_title: "Sikkerhedskopi-filer"
@@ -5385,7 +5388,6 @@ da:
           import_web_advanced: "Avanceret…"
           is_private: "Temaet er i et privat git-repository"
           remote_branch: "Filialnavn (valgfrit)"
-          public_key: "Giv følgende offentlig nøgle adgang til repoen:"
           install: "Installér"
           installed: "Installeret"
           install_popular: "Populære"
@@ -6389,6 +6391,7 @@ da:
         uploading: "Overfører…"
         name: "Navn"
         group: "Gruppe"
+        all_groups: "Alle grupper"
         created_by: "Oprettet Af"
         image: "Billede"
         alt: "brugerdefineret humøikons forhåndsvisning"

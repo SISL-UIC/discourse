@@ -37,6 +37,14 @@ describe "Admin Onboarding Banner" do
       banner.close
 
       expect(SiteSetting.enable_site_owner_onboarding).to eq(false)
+      try_until_success do
+        expect(
+          UserHistory.exists?(
+            action: UserHistory.actions[:admin_onboarding_dismissed],
+            acting_user_id: admin.id,
+          ),
+        ).to eq(true)
+      end
     end
   end
 
@@ -165,12 +173,15 @@ describe "Admin Onboarding Banner" do
       expect(page).to have_css(".admin-onboarding-banner")
       expect(design_wizard_sidebar).to be_hidden
       expect(banner.step_completed?("select_theme")).to eq(true)
+      expect(Theme.find(SiteSetting.default_theme_id).name).to eq(selected_name)
 
-      expect(SiteSetting.default_theme_id).to eq(Theme.horizon_theme.id)
-      horizon = Theme.horizon_theme
-      expect(horizon.color_scheme.name).to eq("Royal")
-      expect(horizon.color_scheme.user_selectable).to eq(true)
-      expect(SiteSetting.base_font).to eq("lato")
+      # the reload must not cancel the in-flight audit write
+      expect(
+        UserHistory.where(
+          action: UserHistory.actions[:admin_onboarding_step_completed],
+          acting_user_id: admin.id,
+        ).pluck(:subject),
+      ).to eq(["select_theme"])
     end
   end
 
@@ -202,6 +213,22 @@ describe "Admin Onboarding Banner" do
       # Page reloads after saving; banner disappears when all steps complete
       expect(banner).to be_not_visible
       expect(SiteSetting.enable_site_owner_onboarding).to eq(false)
+
+      try_until_success do
+        expect(
+          UserHistory.where(
+            action: UserHistory.actions[:admin_onboarding_step_completed],
+            acting_user_id: admin.id,
+          ).pluck(:subject),
+        ).to contain_exactly("start_posting", "invite_collaborators", "select_theme")
+
+        expect(
+          UserHistory.exists?(
+            action: UserHistory.actions[:admin_onboarding_completed],
+            acting_user_id: admin.id,
+          ),
+        ).to eq(true)
+      end
     end
   end
 
