@@ -1,11 +1,20 @@
+import { waitFor } from "@ember/test-helpers";
 import { module, test } from "qunit";
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import { testMarkdown } from "discourse/tests/helpers/rich-editor-helper";
+import pretender, { response } from "discourse/tests/helpers/create-pretender";
+import {
+  setupRichEditor,
+  testMarkdown,
+} from "discourse/tests/helpers/rich-editor-helper";
 
 module(
   "Integration | Component | prosemirror-editor - quote extension",
   function (hooks) {
     setupRenderingTest(hooks);
+
+    hooks.beforeEach(function () {
+      pretender.get("/u/:username/card.json", () => response(404, {}));
+    });
 
     Object.entries({
       "basic quote": [
@@ -47,6 +56,35 @@ module(
       test(name, async function (assert) {
         await testMarkdown(assert, markdown, html, expectedMarkdown);
       });
+    });
+
+    test("quote with a resolvable user avatar", async function (assert) {
+      // username unique to this test, as avatar lookups are cached module-wide
+      pretender.get("/u/avatared_user/card.json", () =>
+        response({
+          user: { avatar_template: "/images/avatar.png?size={size}" },
+        })
+      );
+
+      const [editor] = await setupRichEditor(
+        assert,
+        `[quote="Full Name, post:123, topic:456, username:avatared_user"]\nQuoted text.\n\n[/quote]`
+      );
+
+      await waitFor("aside.quote .title img.avatar");
+
+      const img = document.querySelector("aside.quote .title img.avatar");
+      assert.true(
+        img.getAttribute("src").startsWith("/images/avatar.png"),
+        "avatar uses the looked up template"
+      );
+      assert.dom("aside.quote .title").hasText("Full Name:");
+
+      assert.strictEqual(
+        editor.value,
+        `[quote="Full Name, post:123, topic:456, username:avatared_user"]\nQuoted text.\n\n[/quote]\n\n`,
+        "avatar does not leak into the serialized markdown"
+      );
     });
   }
 );
