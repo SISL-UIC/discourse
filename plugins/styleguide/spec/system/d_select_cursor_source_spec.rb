@@ -25,14 +25,19 @@ describe "UiKit | DSelect cursor source" do
 
     # A cursor source still paging cannot honestly size its set: the window is bounded and
     # more rows exist behind it, so every mounted option reports an indeterminate size.
-    expect(page).to have_css(combobox.option_selector, wait: 10)
-    expect(combobox.options.first[:"aria-setsize"]).to eq("-1")
+    #
+    # Asserted as one waiting matcher that names the attribute, rather than waiting for any row and
+    # then reading `.options.first`. That two-step is a check-then-fetch race: the row satisfying the
+    # wait and the row re-queried afterwards need not be the same one, because the virtualizer can
+    # swap the mounted window in between — which is how this spec came to fail once with the right
+    # markup on screen. Waiting for a row that ALREADY carries the value cannot sample too early,
+    # and unlike a retry it does not paper over the race it is meant to observe.
+    expect(page).to have_css("#{combobox.option_selector}[aria-setsize='-1']", wait: 10)
 
     # Narrow enough that the source exhausts within a single page and declares completeness.
     # Every topic title ends in a unique "#<id>", so this matches exactly one row.
     combobox.input.send_keys("#4242")
 
-    expect(page).to have_css(combobox.option_selector, count: 1, wait: 10)
-    expect(combobox.options.first[:"aria-setsize"]).to eq("1")
+    expect(page).to have_css("#{combobox.option_selector}[aria-setsize='1']", count: 1, wait: 10)
   end
 end
