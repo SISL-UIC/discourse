@@ -1,6 +1,10 @@
+import { settled } from "@ember/test-helpers";
 import { module, test } from "qunit";
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import { testMarkdown } from "discourse/tests/helpers/rich-editor-helper";
+import {
+  setupRichEditor,
+  testMarkdown,
+} from "discourse/tests/helpers/rich-editor-helper";
 
 module(
   "Integration | Component | prosemirror-editor - html-inline extension",
@@ -120,6 +124,17 @@ module(
       test(name, async function (assert) {
         await testMarkdown(assert, markdown, html, expectedMarkdown);
       });
+    });
+
+    test("unwraps a pasted span carrying lang", async function (assert) {
+      const [self] = await setupRichEditor(assert, "");
+
+      self.view.pasteHTML(
+        `<p><span class="sentence" lang="en">So I have heard.</span> <span class="sentence" lang="en">At one time.</span></p>`
+      );
+      await settled();
+
+      assert.strictEqual(self.value, "So I have heard. At one time.");
     });
   }
 );

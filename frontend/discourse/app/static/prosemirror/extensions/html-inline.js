@@ -31,7 +31,11 @@ const ALLOWED_TAG_ATTRS = {
   rt: ["lang"],
 };
 
-function extractHtmlAttrs(element, tagName) {
+const MARKDOWN_ONLY_ATTRS = {
+  span: ["lang"],
+};
+
+function extractHtmlAttrs(element, tagName, ignoredAttrs) {
   const allowed = ALLOWED_TAG_ATTRS[tagName];
   if (!allowed) {
     return null;
@@ -39,6 +43,9 @@ function extractHtmlAttrs(element, tagName) {
   const attrs = {};
   let hasAny = false;
   for (const attr of allowed) {
+    if (ignoredAttrs?.includes(attr)) {
+      continue;
+    }
     const value = element.getAttribute(attr);
     if (value != null) {
       attrs[attr] = value;
@@ -62,16 +69,6 @@ function serializeHtmlAttrs(htmlAttrs) {
 
 const ALL_ALLOWED_TAGS = [...Object.keys(HTML_INLINE_MARKS), ...ALLOWED_INLINE];
 
-// External tools often add `lang` to every span. Markdown-authored attributes
-// use the token parser, so removing it here does not affect them.
-function stripLangFromExternalSpans(root) {
-  root
-    .querySelectorAll("span[lang]")
-    .forEach((el) => el.removeAttribute("lang"));
-}
-
-const HAS_SPAN_LANG_ATTRIBUTE = /<span\b[^>]*\slang(?:\s*=|[\s/>])/i;
-
 /** @type {RichEditorExtension} */
 const extension = {
   nodeSpec: {
@@ -84,14 +81,15 @@ const extension = {
       parseDOM: ALLOWED_INLINE.map((tag) => ({
         tag,
         getAttrs: (element) => {
-          if (tag === "span") {
-            const htmlAttrs = extractHtmlAttrs(element, tag);
-            if (!htmlAttrs) {
-              return false;
-            }
-            return { tag, htmlAttrs };
+          const htmlAttrs = extractHtmlAttrs(
+            element,
+            tag,
+            MARKDOWN_ONLY_ATTRS[tag]
+          );
+          if (tag === "span" && !htmlAttrs) {
+            return false;
           }
-          return { tag, htmlAttrs: extractHtmlAttrs(element, tag) };
+          return { tag, htmlAttrs };
         },
       })),
       toDOM: (node) => {
@@ -198,29 +196,6 @@ const extension = {
       state.renderInline(node);
       state.write(`</${node.attrs.tag}>`);
     },
-  },
-  transformParsedHTML(doc) {
-    stripLangFromExternalSpans(doc);
-  },
-  plugins({ pmState: { Plugin } }) {
-    return new Plugin({
-      props: {
-        transformPastedHTML(html) {
-          // Preserve internal slices so authored `lang` attributes round-trip.
-          if (
-            !HAS_SPAN_LANG_ATTRIBUTE.test(html) ||
-            html.includes("data-pm-slice")
-          ) {
-            return html;
-          }
-
-          const doc = new DOMParser().parseFromString(html, "text/html");
-          stripLangFromExternalSpans(doc);
-
-          return doc.body.innerHTML;
-        },
-      },
-    });
   },
   inputRules: {
     match: new RegExp(`<(${ALL_ALLOWED_TAGS.join("|")})>$`, "i"),
