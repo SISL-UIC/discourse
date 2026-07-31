@@ -36,7 +36,7 @@ interface DevToolPosition {
  * definition: a core tool added after this one would otherwise leave them
  * disagreeing about where the core set ends.
  */
-export const LAST_CORE_TOOL = "verbose-localization";
+export const LAST_CORE_TOOL = "message-bus";
 
 let devTools: DAG;
 resetDevTools();

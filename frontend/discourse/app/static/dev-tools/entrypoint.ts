@@ -3,6 +3,8 @@ import { devToolsDAG } from "discourse/lib/dev-tools/registry";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import BlockDebugButton from "./block-debug/button";
 import { patchBlockRendering } from "./block-debug/patch";
+import MessageBusButton from "./message-bus/button";
+import { install as observeMessageBus } from "./message-bus/instrumentation";
 import PluginOutletDebugButton from "./plugin-outlet-debug/button";
 import { patchConnectors } from "./plugin-outlet-debug/patch";
 import SafeModeButton from "./safe-mode/button";
@@ -25,6 +27,7 @@ export const CORE_TOOLS: [id: string, component: unknown][] = [
   ["upcoming-changes-debug", UpcomingChangesDebugButton],
   ["safe-mode", SafeModeButton],
   ["verbose-localization", VerboseLocalizationButton],
+  ["message-bus", MessageBusButton],
 ];
 
 /**
@@ -50,6 +53,10 @@ function seedCoreTools() {
 
 export function init() {
   seedCoreTools();
+
+  // Installed at load rather than when the panel is opened, so that the
+  // subscriptions made during boot are attributed like any other.
+  observeMessageBus();
 
   patchConnectors();
   patchBlockRendering();
