@@ -75,12 +75,14 @@ module("Integration | Component | dev-tools | toolbar", function (hooks) {
     );
   });
 
-  test("a loader resolving to the component itself is accepted", async function (assert) {
-    devToolsToolbarApi().add("lazy", async () => Lazy);
+  test("a loader returning the component synchronously is accepted", async function (assert) {
+    devToolsToolbarApi().add("lazy", () => Lazy);
 
     await render(<template><Toolbar /></template>);
 
-    assert.dom(".dev-tools-toolbar .lazy-tool").exists();
+    assert
+      .dom(".dev-tools-toolbar .lazy-tool")
+      .exists("the synchronously returned component renders");
   });
 
   test("a tool is fetched once no matter how often the toolbar re-renders", async function (assert) {
@@ -106,6 +108,21 @@ module("Integration | Component | dev-tools | toolbar", function (hooks) {
     devToolsDAG().add("first", First);
     devToolsToolbarApi().add("broken", async () => {
       throw new Error("chunk unavailable");
+    });
+
+    await render(<template><Toolbar /></template>);
+
+    assert.deepEqual(
+      toolClasses(),
+      ["gripper", "first-tool", "disable-dev-tools"],
+      "the broken tool is skipped and the working one still renders"
+    );
+  });
+
+  test("a tool whose loader throws synchronously leaves the rest of the toolbar intact", async function (assert) {
+    devToolsDAG().add("first", First);
+    devToolsToolbarApi().add("broken", () => {
+      throw new Error("loader failed before returning a promise");
     });
 
     await render(<template><Toolbar /></template>);

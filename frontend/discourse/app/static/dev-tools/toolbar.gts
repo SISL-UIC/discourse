@@ -39,7 +39,7 @@ const dDraggable = dDraggableUntyped as unknown as ModifierLike<{
 type DevToolsWindow = Window & { disableDevTools?: () => void };
 
 export default class Toolbar extends Component {
-  @tracked activeDragOffset: number | null;
+  @tracked activeDragOffset: number | null | undefined;
   @tracked ownSize = 0;
   @tracked top = 250;
 
@@ -71,7 +71,7 @@ export default class Toolbar extends Component {
   @action
   disableDevTools() {
     I18n.disableVerboseLocalizationSession();
-    (window as DevToolsWindow).disableDevTools();
+    (window as DevToolsWindow).disableDevTools!();
   }
 
   @action
@@ -93,7 +93,7 @@ export default class Toolbar extends Component {
   dragMove(event: DDraggableEvent) {
     const dragY =
       (event as MouseEvent).pageY || (event as TouchEvent).touches[0].pageY;
-    this.top = dragY - this.activeDragOffset;
+    this.top = dragY - this.activeDragOffset!;
   }
 
   @action

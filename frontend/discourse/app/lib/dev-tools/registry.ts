@@ -3,7 +3,7 @@ import DAG from "discourse/lib/dag";
 import { isDevelopment, isTesting } from "discourse/lib/environment";
 
 /** Returns a tool's component, or a module whose default export is one. */
-type DevToolLoader = () => Promise<unknown>;
+type DevToolLoader = () => unknown | Promise<unknown>;
 
 /** Where a tool sits relative to the others, by their identifiers. */
 interface DevToolPosition {
@@ -38,6 +38,16 @@ interface DevToolPosition {
  */
 export const LAST_CORE_TOOL = "verbose-localization";
 
+export const CORE_TOOL_IDS = [
+  "plugin-outlet-debug",
+  "block-debug",
+  "upcoming-changes-debug",
+  "safe-mode",
+  LAST_CORE_TOOL,
+] as const;
+
+const coreToolIds: ReadonlySet<string> = new Set(CORE_TOOL_IDS);
+
 let devTools: DAG;
 resetDevTools();
 
@@ -58,7 +68,10 @@ resetDevTools();
  * real entry is added.
  */
 function resetDevTools() {
-  devTools = new DAG({ defaultPosition: { after: LAST_CORE_TOOL } });
+  devTools = new DAG({
+    defaultPosition: { after: LAST_CORE_TOOL },
+    throwErrorOnCycle: false,
+  });
 }
 
 /**
@@ -101,9 +114,9 @@ class LazyDevTool {
    * @returns A promise for the component.
    */
   get component(): Promise<ComponentLike> {
-    this.#component ??= this.#loader().then(
-      (loaded) => (loaded as { default?: unknown })?.default ?? loaded
-    );
+    this.#component ??= Promise.resolve()
+      .then(() => this.#loader())
+      .then((loaded) => (loaded as { default?: unknown })?.default ?? loaded);
 
     return this.#component as Promise<ComponentLike>;
   }
@@ -165,7 +178,7 @@ class DevToolsToolbarApi {
       );
     }
 
-    if (devTools.has(id)) {
+    if (coreToolIds.has(id) || devTools.has(id)) {
       return refuse(
         `A tool is already registered as "${id}". Identifiers are shared across ` +
           `Discourse and every plugin, so pick one unlikely to collide.`

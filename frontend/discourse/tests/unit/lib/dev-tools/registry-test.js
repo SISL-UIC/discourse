@@ -2,6 +2,7 @@ import { setupTest } from "ember-qunit";
 import { module, test } from "qunit";
 import {
   clearDevTools,
+  CORE_TOOL_IDS,
   devToolsDAG,
   LAST_CORE_TOOL,
 } from "discourse/lib/dev-tools/registry";
@@ -43,14 +44,11 @@ module("Unit | Lib | dev-tools | registry", function (hooks) {
     assert.deepEqual(keysInOrder(), ["first", "second", "third"]);
   });
 
-  test("the default anchor names the last tool the entrypoint seeds", function (assert) {
-    // Were these to drift, the default position would resolve against a tool
-    // in the middle of the core set, and externally registered tools would
-    // quietly appear among the core buttons instead of after them.
-    assert.strictEqual(
-      CORE_TOOLS.at(-1)[0],
-      LAST_CORE_TOOL,
-      "LAST_CORE_TOOL is the identifier of the final core tool"
+  test("the reserved identifiers match the tools the entrypoint seeds", function (assert) {
+    assert.deepEqual(
+      CORE_TOOLS.map(([id]) => id),
+      CORE_TOOL_IDS,
+      "every seeded core tool has a reserved identifier in the same order"
     );
   });
 

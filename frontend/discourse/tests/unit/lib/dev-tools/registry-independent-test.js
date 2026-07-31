@@ -2,17 +2,11 @@ import { setupTest } from "ember-qunit";
 import { module, test } from "qunit";
 import {
   clearDevTools,
+  CORE_TOOL_IDS,
   devToolsDAG,
+  devToolsToolbarApi,
   LAST_CORE_TOOL,
 } from "discourse/lib/dev-tools/registry";
-
-const CORE_TOOL_IDS = [
-  "plugin-outlet-debug",
-  "block-debug",
-  "upcoming-changes-debug",
-  "safe-mode",
-  LAST_CORE_TOOL,
-];
 
 function registerCoreTools(registry, componentFor = (id) => id) {
   let previous;
@@ -94,5 +88,49 @@ module("Unit | Lib | dev-tools | registry independent", function (hooks) {
         `${id} keeps the component from the first seed`
       );
     }
+  });
+
+  test("external registrations cannot use core identifiers", function (assert) {
+    for (const id of CORE_TOOL_IDS) {
+      assert.throws(
+        () => devToolsToolbarApi().add(id, async () => id),
+        /already registered/,
+        `${id} is reserved for its core tool`
+      );
+    }
+
+    assert.deepEqual(
+      devToolsDAG().resolve(),
+      [],
+      "refused registrations do not reach the registry"
+    );
+  });
+
+  test("cyclic external positions fall back without losing either tool", function (assert) {
+    devToolsToolbarApi().add("first", async () => "first", {
+      after: "second",
+    });
+
+    let error;
+    try {
+      devToolsToolbarApi().add("second", async () => "second", {
+        after: "first",
+      });
+    } catch (caught) {
+      error = caught;
+    }
+
+    assert.strictEqual(
+      error,
+      undefined,
+      "closing a positioning cycle does not throw"
+    );
+    assert.deepEqual(
+      devToolsDAG()
+        .resolve()
+        .map(({ key }) => key),
+      ["second", "first"],
+      "the conflicting tool uses the default position and both tools remain registered"
+    );
   });
 });

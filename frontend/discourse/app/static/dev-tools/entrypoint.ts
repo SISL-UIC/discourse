@@ -1,5 +1,5 @@
 import "./styles.css";
-import { devToolsDAG } from "discourse/lib/dev-tools/registry";
+import { CORE_TOOL_IDS, devToolsDAG } from "discourse/lib/dev-tools/registry";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import BlockDebugButton from "./block-debug/button";
 import { patchBlockRendering } from "./block-debug/patch";
@@ -20,11 +20,11 @@ import VerboseLocalizationButton from "./verbose-localization/button";
  * sort into the middle of the core set rather than after it.
  */
 export const CORE_TOOLS: [id: string, component: unknown][] = [
-  ["plugin-outlet-debug", PluginOutletDebugButton],
-  ["block-debug", BlockDebugButton],
-  ["upcoming-changes-debug", UpcomingChangesDebugButton],
-  ["safe-mode", SafeModeButton],
-  ["verbose-localization", VerboseLocalizationButton],
+  [CORE_TOOL_IDS[0], PluginOutletDebugButton],
+  [CORE_TOOL_IDS[1], BlockDebugButton],
+  [CORE_TOOL_IDS[2], UpcomingChangesDebugButton],
+  [CORE_TOOL_IDS[3], SafeModeButton],
+  [CORE_TOOL_IDS[4], VerboseLocalizationButton],
 ];
 
 /**
