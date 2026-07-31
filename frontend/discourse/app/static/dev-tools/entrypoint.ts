@@ -1,0 +1,65 @@
+import "./styles.css";
+import { devToolsDAG } from "discourse/lib/dev-tools/registry";
+import { withPluginApi } from "discourse/lib/plugin-api";
+import BlockDebugButton from "./block-debug/button";
+import { patchBlockRendering } from "./block-debug/patch";
+import PluginOutletDebugButton from "./plugin-outlet-debug/button";
+import { patchConnectors } from "./plugin-outlet-debug/patch";
+import SafeModeButton from "./safe-mode/button";
+import Toolbar from "./toolbar";
+import UpcomingChangesDebugButton from "./upcoming-changes-debug/button";
+import VerboseLocalizationButton from "./verbose-localization/button";
+
+/**
+ * The tools shipped with Discourse, in the order they appear in the toolbar.
+ *
+ * The last entry is also the anchor that externally registered tools default
+ * to being placed after, so it must stay in step with `LAST_CORE_TOOL` in
+ * `discourse/lib/dev-tools/registry`. Exported so that a test can hold the two
+ * together: were they to drift, externally registered tools would silently
+ * sort into the middle of the core set rather than after it.
+ */
+export const CORE_TOOLS: [id: string, component: unknown][] = [
+  ["plugin-outlet-debug", PluginOutletDebugButton],
+  ["block-debug", BlockDebugButton],
+  ["upcoming-changes-debug", UpcomingChangesDebugButton],
+  ["safe-mode", SafeModeButton],
+  ["verbose-localization", VerboseLocalizationButton],
+];
+
+/**
+ * Adds the core tools to the registry.
+ *
+ * Each tool is positioned explicitly against the previous one rather than
+ * relying on the order they are added in. Tools registered through the plugin
+ * API are added earlier in the boot sequence, so insertion order alone would
+ * let an externally registered tool appear among the core buttons.
+ *
+ * Adding a key that is already present is a no-op, so calling this more than
+ * once leaves the registry unchanged.
+ */
+function seedCoreTools() {
+  const registry = devToolsDAG();
+  let previous: string | undefined;
+
+  for (const [id, component] of CORE_TOOLS) {
+    registry.add(id, component, previous ? { after: previous } : {});
+    previous = id;
+  }
+}
+
+export function init() {
+  seedCoreTools();
+
+  patchConnectors();
+  patchBlockRendering();
+
+  // TODO(devxp-typescript-pending): `plugin-api` is untyped JavaScript and does
+  // not export the type of the API object, so only the member used here is
+  // described. Drop this once the plugin API is authored in TypeScript.
+  withPluginApi(
+    (api: { renderInOutlet: (name: string, component: unknown) => void }) => {
+      api.renderInOutlet("above-site-header", Toolbar);
+    }
+  );
+}

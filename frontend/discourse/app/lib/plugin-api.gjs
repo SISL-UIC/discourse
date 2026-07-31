@@ -63,6 +63,7 @@ import { addPopupMenuOption } from "discourse/lib/composer/custom-popup-menu-opt
 import { registerRichEditorExtension } from "discourse/lib/composer/rich-editor-extensions";
 import deprecated from "discourse/lib/deprecated";
 import { registerDesktopNotificationHandler } from "discourse/lib/desktop-notifications";
+import { devToolsToolbarApi } from "discourse/lib/dev-tools/registry";
 import { downloadCalendar } from "discourse/lib/download-calendar";
 import { registeredEditCategoryTabs } from "discourse/lib/edit-category-tabs";
 import { isDevelopment, isTesting } from "discourse/lib/environment";
@@ -2198,6 +2199,32 @@ class _PluginApi {
    **/
   get headerButtons() {
     return headerButtonsDAG();
+  }
+
+  /**
+   * Adds a tool to the developer tools toolbar.
+   *
+   * A tool is registered as a loader rather than as a component, so that neither the component nor anything it imports
+   * reaches the bundle until the toolbar renders it. Registration itself always runs and costs nothing, so there is no
+   * need to guard the call; developer tools are only loaded when they are enabled, and the tool is only fetched then.
+   *
+   * The loader may resolve to the component itself or to a module whose default export is the component, so an
+   * `import()` can be passed directly. Ordering is by identifier and works even though the component has not loaded.
+   * By default a tool is placed after the ones shipped with Discourse.
+   *
+   * Example: Add a `foo` tool to the developer tools toolbar
+   * ```
+   * api.devToolsToolbar.add("foo", () => import("discourse/plugins/my-plugin/dev-tools/foo-button"))
+   * ```
+   *
+   * Example: Add a `foo` tool before the block debugging tool
+   * ```
+   * api.devToolsToolbar.add("foo", () => import(".../foo-button"), { before: "block-debug" })
+   * ```
+   *
+   **/
+  get devToolsToolbar() {
+    return devToolsToolbarApi();
   }
 
   /**
